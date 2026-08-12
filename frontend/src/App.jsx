@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import EODReconciliation from './components/EODReconciliation';
 import { Upload, Loader2, AlertCircle } from 'lucide-react';
+import Analytics from './components/Analytics';
+
 
 function App() {
   const [activeTab, setActiveTab] = useState('reconciliation');
@@ -75,10 +77,7 @@ function App() {
         )}
 
         {activeTab === 'analytics' && (
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Analytics Dashboard</h2>
-            {reportData ? <p>Data loaded. Chart coming in next step.</p> : <p className="text-gray-500">Upload a log to view charts.</p>}
-          </div>
+          <Analytics data={reportData ? reportData.analytics : null} />
         )}
 
         {activeTab === 'narrative' && (
