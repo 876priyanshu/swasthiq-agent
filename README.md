@@ -8,8 +8,8 @@ A full-stack diagnostic and analytics dashboard designed to process End-of-Day (
 *   **AI Integration:** Groq API (Llama-3.1-8b-instant)
 
 ##  Live Application
-* **Frontend:** [Insert your Vercel/Netlify link here]
-* **Backend API:** [Insert your Render/Railway link here]
+* **Frontend:** swasthiq-agent.vercel.app
+* **Backend API:** https://swasthiq-agent-backend.onrender.com
 
 ##  REST API Structure
 The backend exposes a streamlined, stateless REST architecture designed for single-pass processing:
