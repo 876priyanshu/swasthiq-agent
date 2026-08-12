@@ -23,7 +23,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('https://swasthiq-agent-backend.onrender.com', {
+      const response = await fetch('https://swasthiq-agent-backend.onrender.com/api/v1/process-log', {
         method: 'POST',
         body: formData,
       });
