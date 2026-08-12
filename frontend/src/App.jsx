@@ -1,38 +1,90 @@
 import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
+import EODReconciliation from './components/EODReconciliation';
+import { Upload, Loader2, AlertCircle } from 'lucide-react';
 
 function App() {
-  // This is React state. Think of it as a private member variable that automatically 
-  // triggers a UI re-render whenever it gets updated via setTab.
   const [activeTab, setActiveTab] = useState('reconciliation');
+  
+  const [reportData, setReportData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('http://localhost:8000/api/v1/process-log', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.detail?.message || 'Failed to process file');
+      }
+
+      setReportData(result.data);
+      
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+      event.target.value = ''; 
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      {/* The persistent sidebar[cite: 2] */}
       <Sidebar currentTab={activeTab} setTab={setActiveTab} />
 
-      {/* Main content area (offset by the 64-width sidebar) */}
       <div className="ml-64 flex-1 p-8">
         
-        {/* We will build these three screens in the next steps */}
-        {activeTab === 'reconciliation' && (
+        <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">EOD Reconciliation</h2>
-            <p className="text-gray-500">Upload a log to view metrics.</p>
+            <h2 className="text-xl font-bold text-gray-800">Clinic Dashboard</h2>
+            <p className="text-sm text-gray-500">Upload today's JSON log to generate insights</p>
           </div>
+          
+          <div>
+            <label className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+              {isLoading ? <Loader2 className="animate-spin" size={20} /> : <Upload size={20} />}
+              <span>{isLoading ? 'Processing...' : 'Upload Log'}</span>
+              <input type="file" accept=".json" className="hidden" onChange={handleFileUpload} />
+            </label>
+          </div>
+        </div>
+
+        {error && (
+          <div className="mb-8 bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center space-x-3">
+            <AlertCircle size={20} />
+            <p>{error}</p>
+          </div>
+        )}
+
+        {activeTab === 'reconciliation' && (
+          <EODReconciliation data={reportData ? reportData.reconciliation : null} />
         )}
 
         {activeTab === 'analytics' && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Analytics Dashboard</h2>
-            <p className="text-gray-500">Upload a log to view charts.</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Analytics Dashboard</h2>
+            {reportData ? <p>Data loaded. Chart coming in next step.</p> : <p className="text-gray-500">Upload a log to view charts.</p>}
           </div>
         )}
 
         {activeTab === 'narrative' && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">AI Narrative Summary</h2>
-            <p className="text-gray-500">Upload a log to generate summary.</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">AI Narrative Summary</h2>
+            {reportData ? <p>Data loaded. Summary coming in next step.</p> : <p className="text-gray-500">Upload a log to view summary.</p>}
           </div>
         )}
 
