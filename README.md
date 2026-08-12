@@ -7,6 +7,26 @@ A full-stack diagnostic and analytics dashboard designed to process End-of-Day (
 *   **Frontend:** React, Vite, Tailwind CSS, Recharts
 *   **AI Integration:** Groq API (Llama-3.1-8b-instant)
 
+##  Live Application
+* **Frontend:** [Insert your Vercel/Netlify link here]
+* **Backend API:** [Insert your Render/Railway link here]
+
+##  REST API Structure
+The backend exposes a streamlined, stateless REST architecture designed for single-pass processing:
+
+* **`GET /health`**
+  * **Purpose:** Infrastructure health check and ping endpoint.
+* **`POST /api/v1/process-log`**
+  * **Payload:** `multipart/form-data` (Accepts `.json` log files).
+  * **Response (200 OK):** Returns a unified, strictly typed JSON object containing `reconciliation` (financial aggregates), `analytics` (peak hours, top medicines), and `narrative` (the grounded AI summary).
+  * **Response (400 Bad Request):** Returns detailed Pydantic validation errors if the uploaded data violates schema constraints.
+
+##  Ensuring Data Consistency
+To prevent database corruption and ensure state consistency, the Python backend employs a strict "all-or-nothing" validation architecture:
+1. **Schema Enforcement:** Every row of the incoming JSON log is mapped to a Pydantic model (`LogEntry`). Field types (e.g., `amount_paid_paise` as integers) and enums (e.g., `payment_mode` as 'cash', 'card', 'upi') are strictly enforced.
+2. **Atomic Processing:** The system processes the file in memory. If a single row is malformed or missing a required field, the entire parsing operation halts immediately. It throws a `DataValidationError` rather than silently skipping the row, ensuring partial or corrupt data never influences the aggregated metrics.
+3. **Deterministic Pre-calculation:** All financial aggregations are computed deterministically *before* the LLM is invoked, ensuring the "source of truth" remains immutable and consistent regardless of AI behavior.
+
 ##  Core Engineering Features
 
 ### 1. Strict Validation Pipeline
