@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 from enum import Enum
 
-# 1. Enums for strict validation (just like C++ enum class)
+# 1. Enums for strict validation
 class PaymentMode(str, Enum):
     CASH = "cash"
     CARD = "card"

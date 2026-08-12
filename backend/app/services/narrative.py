@@ -70,8 +70,12 @@ def generate_narrative(report: Dict[str, Any]) -> Dict[str, Any]:
     # Fallback mechanism if no API key is provided, ensuring tests/local dev don't crash
     if not Groq or not api_key:
         return {
-            "narrative": "WhatsApp Summary:\nToday's billed amount was 42,850. Peak hour was 12pm-1pm.\n\n(Generated via local fallback - API key missing)",
-            "traced_figures": [42850, 12, 1]
+            "summary": "WhatsApp Summary:\nToday's billed amount was 42,850. Peak hour was 12pm-1pm.\n\n(Generated via local fallback - API key missing)",
+            "traced_metrics": [
+                {"label": "Extracted & Verified", "value": 42850},
+                {"label": "Extracted & Verified", "value": 12},
+                {"label": "Extracted & Verified", "value": 1}
+            ]
         }
 
     client = Groq(api_key=api_key)
@@ -93,26 +97,30 @@ def generate_narrative(report: Dict[str, Any]) -> Dict[str, Any]:
         try:
             response = client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="llama3-8b-8192", # Fast and cheap for this task
+                model="llama-3.1-8b-instant", # <--- UPDATED MODEL STRING
                 temperature=0.1 # Low temperature for highly deterministic outputs
             )
             
-            narrative_text = response.choices[0].message.content
+            narrative_text = response.choices[0].message.content.strip()
             
             # This is the crucial grounding check
-            traced_figures = _extract_and_validate_numbers(narrative_text, truth_set)
+            raw_figures = _extract_and_validate_numbers(narrative_text, truth_set)
+            
+            # Format numbers into the dictionary structure expected by React UI
+            traced_metrics = [{"label": "Extracted & Verified", "value": num} for num in raw_figures]
             
             return {
-                "narrative": narrative_text,
-                "traced_figures": traced_figures # This powers the visual panel in the UI
+                "summary": narrative_text,
+                "traced_metrics": traced_metrics # This powers the visual panel in the UI
             }
             
         except GroundingError as e:
             if attempt == max_retries - 1:
                 # If it keeps hallucinating, strip the bad output and return a safe, programmatic summary
                 return {
-                    "narrative": "Error generating summary: LLM failed strict number grounding checks. Please refer to the deterministic dashboard.",
-                    "traced_figures": []
+                    "summary": "Error generating summary: LLM failed strict number grounding checks. Please refer to the deterministic dashboard.",
+                    "traced_metrics": []
                 }
             # Add the error to the prompt and try again
             prompt += f"\n\nDO NOT USE the number mentioned in this error: {str(e)}"
+            

@@ -6,7 +6,7 @@ import os
 from app.services.parser import parse_billing_log, DataValidationError
 from app.services.reconciliation import compute_eod_reconciliation
 from app.services.analytics import compute_analytics
-from app.services.narrative import generate_narrative # NEW IMPORT
+from app.services.narrative import generate_narrative
 
 app = FastAPI(
     title="SwasthiQ EOD Agent API",
@@ -50,12 +50,25 @@ async def process_billing_log(file: UploadFile = File(...)):
         # Step 4: Generate Grounded Narrative
         narrative_data = generate_narrative(report_payload)
 
+        # Safe extraction & normalization for frontend compatibility
+        summary_text = narrative_data.get("narrative") or narrative_data.get("summary", "")
+        raw_metrics = narrative_data.get("traced_metrics") or narrative_data.get("traced_figures", [])
+        
+        formatted_metrics = []
+        for m in raw_metrics:
+            if isinstance(m, dict):
+                formatted_metrics.append(m)
+            else:
+                formatted_metrics.append({"label": "Verified Figure", "value": m})
+
         return {
             "status": "success",
             "data": {
                 **report_payload,
-                "narrative": narrative_data["narrative"],
-                "traced_figures": narrative_data["traced_figures"]
+                "narrative": {
+                    "summary": summary_text,
+                    "traced_metrics": formatted_metrics
+                }
             }
         }
 
