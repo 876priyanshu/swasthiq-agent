@@ -94,7 +94,7 @@ def generate_narrative(report: Dict[str, Any]) -> Dict[str, Any]:
         try:
             response = client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="llama-3.1-8b-instant", # <--- UPDATED MODEL STRING
+                model="llama-3.1-8b-instant", 
                 temperature=0.1 # Low temperature for highly deterministic outputs
             )
             
