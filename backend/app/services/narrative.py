@@ -50,8 +50,7 @@ def _extract_and_validate_numbers(text: str, truth_set: Set[float]) -> List[floa
         
         # Check against our ground truth
         if clean_num not in truth_set:
-            # If the LLM mentions a 12 or 24 hour time (like 2pm), and it isn't in the report verbatim,
-            # we do a soft bypass for standard hours to prevent false positive grounding failures.
+
             if 1 <= clean_num <= 24:
                 continue 
             raise GroundingError(f"Hallucinated number detected: {num_str}")
