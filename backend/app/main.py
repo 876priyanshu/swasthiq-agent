@@ -41,13 +41,13 @@ async def process_billing_log(file: UploadFile = File(...)):
         reconciliation = compute_eod_reconciliation(validated_rows)
         analytics = compute_analytics(validated_rows)
 
-        # Combine deterministic data to feed the LLM
+        
         report_payload = {
             "reconciliation": reconciliation,
             "analytics": analytics
         }
 
-        # Step 4: Generate Grounded Narrative
+
         narrative_data = generate_narrative(report_payload)
 
         # Safe extraction & normalization for frontend compatibility
