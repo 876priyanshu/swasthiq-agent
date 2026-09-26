@@ -31,7 +31,7 @@ function App() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.detail?.message || 'Failed to process file');
+        throw new Error(result.detail?.message || 'Failed to process the file');
       }
 
       setReportData(result.data);
