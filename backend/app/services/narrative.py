@@ -35,8 +35,7 @@ def _extract_and_validate_numbers(text: str, truth_set: Set[float]) -> List[floa
     Parses numbers from the text and validates them against the truth set.
     Includes your specific bug fixes for list markers and hyphenated ranges.
     """
-    # Fix 1: Precise list-marker stripping. 
-    # Instead of ignoring numbers under 25, we explicitly remove "1.", "2)", etc. at the start of lines.
+
     cleaned_text = re.sub(r'^\s*\d+[\.\)]\s*', '', text, flags=re.MULTILINE)
 
     # Fix 2: Match unsigned numbers to avoid parsing "1pm-2pm" as -2.
