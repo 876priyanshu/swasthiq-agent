@@ -50,7 +50,7 @@ export default function NarrativeSummary({ data }) {
             ))
           ) : (
             <span className="text-sm text-gray-500 italic">
-              {isString ? "API offline. Local fallback used. No metrics traced." : "No metrics parsed."}
+              {isString ? "API offline. Local fallback used. No metrics traced." :"No metrics parsed."}
             </span>
           )}
         </div>
