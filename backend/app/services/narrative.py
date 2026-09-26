@@ -3,7 +3,7 @@ import re
 import json
 from typing import Dict, Any, List, Set, Tuple
 
-# We will use the Groq SDK. If it's missing or no key is provided, we'll gracefully fall back.
+
 try:
     from groq import Groq
 except ImportError:
