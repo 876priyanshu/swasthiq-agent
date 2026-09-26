@@ -38,8 +38,7 @@ def _extract_and_validate_numbers(text: str, truth_set: Set[float]) -> List[floa
 
     cleaned_text = re.sub(r'^\s*\d+[\.\)]\s*', '', text, flags=re.MULTILINE)
 
-    # Fix 2: Match unsigned numbers to avoid parsing "1pm-2pm" as -2.
-    # Matches numbers with optional commas and decimals (e.g., 42,850 or 12 or 1.5)
+
     number_pattern = r'\b\d+(?:,\d+)*(?:\.\d+)?\b'
     
     raw_numbers = re.findall(number_pattern, cleaned_text)
