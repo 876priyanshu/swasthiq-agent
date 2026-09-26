@@ -27,7 +27,7 @@ export default function EODReconciliation({ data }) {
       {/* Stat Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {statCards.map((card, index) => (
-          <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div key={index} className="bg-grey p-6 rounded-xl shadow-sm border border-gray-100">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{card.label}</h3>
             <p className={`text-2xl font-bold ${card.color}`}>{formatMoney(card.value)}</p>
           </div>
